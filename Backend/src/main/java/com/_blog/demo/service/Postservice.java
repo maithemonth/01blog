@@ -2,7 +2,7 @@ package com._blog.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import com._blog.demo.model.Entity.Post;
 import com._blog.demo.model.Entity.User;
 import com._blog.demo.repository.PostRepo;
@@ -21,4 +21,7 @@ public class Postservice{
         post.setUsers(users);
         return postrep.save(post);
     }
+    public List<Post> getAllPosts(){
+    return postrep.findAll();
+}
 }

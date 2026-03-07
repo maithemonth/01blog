@@ -3,3 +3,4 @@ docker run --name postgres-spring -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=sprin
 
 #to exex container and enter the db sec 
 #docker exec -it postgres-spring psql -U postgres -d springdb
+#stop containers and remove them docker rm -f $(docker ps -aq)

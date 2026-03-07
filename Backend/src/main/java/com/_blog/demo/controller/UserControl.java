@@ -1,4 +1,3 @@
-// ...existing code...
 package com._blog.demo.controller;
 
 import java.util.HashMap;
@@ -9,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,18 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com._blog.demo.model.Entity.User;
+import com._blog.demo.model.Entity.Role;
 import org.springframework.security.core.Authentication;
 import com._blog.demo.service.JwtService;
 import com._blog.demo.service.Userservice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4300"}, allowCredentials = "true")
 public class UserControl {
+    private static final Logger logger = LoggerFactory.getLogger(UserControl.class);
+    
     @Autowired
     private Userservice userService;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -49,6 +56,28 @@ public class UserControl {
     @PostMapping("/add")
     public User addUser(@RequestBody User user){
         return userService.saveUser(user);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        try {
+            logger.info("Registering user with email: {}", user.getEmail());
+            
+            // Encrypt the password
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            
+            // Set default role if not provided
+            if (user.getRole() == null) {
+                user.setRole(Role.USER);
+            }
+            
+            User savedUser = userService.saveUser(user);
+            logger.info("User registered successfully with id: {}", savedUser.getUserid());
+            return ResponseEntity.ok("User registered successfully");
+        } catch (Exception e) {
+            logger.error("Error registering user: ", e);
+            return ResponseEntity.status(500).body("Error registering user: " + e.getMessage());
+        }
     }
 
     // Protected endpoint example: expects Authorization: Bearer <token>

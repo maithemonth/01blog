@@ -2,10 +2,15 @@ import { Routes } from '@angular/router';
 import { Login} from './login/login';
 import {Register} from './register/register'
 import {Profile} from './profile/profile'
+import { Home } from './home/home';
 import { App } from './app';
+import { PostsComponent } from './posts/posts';
+
 export const routes: Routes = [
-  { path: 'home', component: App }, 
-      { path: 'login', component: Login },
-      {path: 'register', component:Register},
-      {path: 'profile', component:Profile},
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: Home }, 
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
+  { path: 'profile', component: Profile },
+  {path:'posts', component: PostsComponent}
 ];
